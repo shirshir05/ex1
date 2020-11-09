@@ -1,17 +1,25 @@
 from deap import base, creator
 import random
 from deap import tools
+from configparser import ConfigParser
+
+# Read config.ini file
+config_object = ConfigParser()
+config_object.read("config.ini")
+
+# params
+params = config_object["PARAMS"]
+size_population_init = int(params["size_population_init"])
+# size_feature >= 253
+size_feature = int(params["size_feature"])
 
 possible_Moves = ['U', 'R', 'L', 'D', 'u', 'r', 'l', 'd']
-size_population_init = 10
-# size_feature >= 253
-size_feature = 10
+
 seed_number = 0.5
 random.seed(seed_number)
 cross_over_prob = 0.5
 mutation_prob = 0.5
-number_run= 500
-
+number_run = 500
 
 creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
 creator.create("Individual", list, fitness=creator.FitnessMin)
@@ -21,11 +29,13 @@ def random_pop():
     move_index = random.randint(0, 7)
     return possible_Moves[move_index]
 
+
 toolbox = base.Toolbox()
 toolbox.register("attr_str", random_pop)
 toolbox.register("individual", tools.initRepeat, creator.Individual,
                  toolbox.attr_str, n=size_feature)
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
+
 
 # define fitness
 def evaluate(individual):
