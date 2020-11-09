@@ -1,7 +1,7 @@
 import pathlib
 from queue import Queue
 
-NUMBER_COL = 20
+NUMBER_COL = 19
 
 
 class Game:
@@ -75,16 +75,16 @@ class Game:
                  y - col number
                  pos - @ or +
         """
-        x = 0
-        y = 0
+        col_index = 0
+        row_index = 0
         for row in self.matrix[level - 1]:
             for pos in row:
                 if pos == '@' or pos == '+':
-                    return (y, x, pos)
+                    return row_index, col_index, pos
                 else:
-                    x = x + 1
-            y = y + 1
-            x = 0
+                    col_index = col_index + 1
+            row_index = row_index + 1
+            col_index = 0
 
     def can_move(self, level, row, col):
         return self.get_content(level, self.worker(level)[0] + row, self.worker(level)[1] + col) not in ['#', '*', '$']
@@ -200,16 +200,24 @@ class Game:
         return True
 
     def play(self, level, list_move):
+        index = 0
         for move in list_move:
-            if self.is_completed(level): return True
+            if self.is_completed(level):
+                return True
             if move == 'L' or move == 'l':
-                if not self.move(level, 0, -1, True): return False
-            elif move == 'E' or move == 'r':
-                if not self.move(level, 0, 1, True): return False
-            elif move == 'D' or move == 'd':
-                if not self.move(level, -1, 0, True): return False
-            elif move == 'U' or move =='u':
-                if not self.move(level, 1, 0, True): return False
+                if not self.move(level, 0, -1, True):
+                    return -1
+            elif move == 'R' or move == 'r':
+                if not self.move(level, 0, 1, True):
+                    return -1
+            elif move == 'U' or move == 'u':
+                if not self.move(level, -1, 0, True):
+                    return -1
+            elif move == 'D' or move =='d':
+                if not self.move(level, 1, 0, True):
+                    return -1
+            index += 1
+        return self.is_completed(level)  # True/ False
 
     @staticmethod
     def string_split():
@@ -221,9 +229,9 @@ class Game:
             list_move.append(i)
         return list_move
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     game = Game("one_input.txt", 1)
-    game.print_board()
-    print(game.play(1,Game.string_split()))
+    # game.print_board()
+    print(game.play(1, Game.string_split()))
 
