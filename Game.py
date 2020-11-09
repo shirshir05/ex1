@@ -102,6 +102,14 @@ class Game:
                     return False
         return True
 
+    def count_left_crates(self,level):
+        counter = 0
+        for row in self.matrix[level - 1]:
+            for cell in row:
+                if cell == '$':
+                    counter = counter + 1
+        return counter
+
     def move_box(self, level, x, y, a, b):
         #        (x,y) -> move to do
         #        (a,b) -> box to move
@@ -198,6 +206,15 @@ class Game:
             # can't move
             return False
         return True
+
+    def is_deadlock(self,level):
+        if not self.can_move(level, 0, -1) and not self.can_move(level, 0, 1):
+            if not self.can_move(level, -1, 0) and not self.can_move(level, 1, 0):
+                return True
+        else:
+            return False
+
+
 
     def play(self, level, list_move):
         index = 0
