@@ -21,10 +21,16 @@ class SaveRun:
         dict_config = [{section: dict(config_object[section]) for section in config_object.sections()}]
         with open(self.path, 'w', newline='') as myfile:
             writer_list = csv.writer(myfile, delimiter=',')
+            list_key = []
+            list_value = []
             for data in dict_config:
                 for section in data:
-                    writer_list.writerow([section])
-                    writer_list.writerow(list(data[section].items()))
+                    for i, j in data[section].items():
+                        list_key.append(i)
+                        list_value.append(j)
+            writer_list.writerow(list_key)
+            writer_list.writerow(list_value)
+
             writer_header = csv.writer(myfile, delimiter=',')
             writer_header.writerow(['epoch', 'max', 'sum', 'average'])
 
@@ -63,10 +69,10 @@ class SaveRun:
             data = [ele for ele in data if ele != []]
             return data
 
-    def write_epoch(self, epoch, max, sum, number_pop):
+    def write_epoch(self, epoch, min_fitness, sum, number_pop):
         with open(self.path, 'a', newline='') as myfile:
             writer = csv.writer(myfile, delimiter=',')
-            writer.writerow([epoch, max, sum, sum/number_pop])
+            writer.writerow([epoch, min_fitness, sum, sum/number_pop])
             myfile
 
 
