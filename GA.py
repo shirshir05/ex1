@@ -2,13 +2,31 @@ from deap import base, creator
 import random
 from deap import tools
 from configparser import ConfigParser
-from fitness import SimpleDistanceFitness, AbsDifferenceSolutionLengthFitness, AreaLengthFitness, Fitness
+from fitness import SimpleDistanceFitness, AbsDifferenceSolutionLengthFitness, AreaLengthFitness, Fitness, \
+    DistanceAndCrates
+
+
+def mutate_rand(individual, indpb):
+    size = len(individual)
+    for i in range(size):
+        if random.random() < indpb:
+            individual[i] = random_pop()
+    return individual,
+
+def random_pop():
+    move_index = random.randint(0, 7)
+    return possible_Moves[move_index]
+
 
 fitness_dict = {"AreaLengthFitness": AreaLengthFitness,
                 "AbsDifferenceSolutionLengthFitness": AbsDifferenceSolutionLengthFitness,
-                "SimpleDistanceFitness": SimpleDistanceFitness}
-crossover_dict = {"cxTwoPoint": tools.cxTwoPoint}
-mutate_dict = {"mutShuffleIndexes": tools.mutShuffleIndexes}
+                "SimpleDistanceFitness": SimpleDistanceFitness,
+                "DistanceAndCrates": DistanceAndCrates}
+crossover_dict = {"cxTwoPoint": tools.cxTwoPoint,
+                  "cxTwoPoint":tools.cxTwoPoint,
+                  "cxUniform":tools.cxUniform}
+mutate_dict = {"mutShuffleIndexes": tools.mutShuffleIndexes,
+               "mutate_rand":mutate_rand}
 
 # Read config.ini file
 config_object = ConfigParser()
@@ -41,9 +59,8 @@ creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
 creator.create("Individual", list, fitness=creator.FitnessMin)
 
 
-def random_pop():
-    move_index = random.randint(0, 7)
-    return possible_Moves[move_index]
+
+
 
 
 toolbox = base.Toolbox()
@@ -52,15 +69,16 @@ toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.att
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
 # define operator
-toolbox.register("mate", crossover)
-toolbox.register("mutate", mutate, indpb=mutation_prob)
-toolbox.register("select", tools.selTournament, tournsize=2)
+toolbox.register("mate", tools.cxMessyOnePoint)
+toolbox.register("mutate", mutate_rand, indpb=0.4)
+
+toolbox.register("select", tools.selTournament, tournsize=5)
 toolbox.register("evaluate", fitness.evaluate)
 
 
 def main():
     pop = toolbox.population(n=size_population_init)
-
+    #print(pop)
     # Evaluate the entire population
     fitnesses = map(toolbox.evaluate, pop)
     for ind, fit in zip(pop, fitnesses):
