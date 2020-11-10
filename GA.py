@@ -1,25 +1,39 @@
+# region import
+import itertools
+
 from deap import base, creator
 import random
 from deap import tools
 from configparser import ConfigParser
+from SaveRun import SaveRun
 from fitness import SimpleDistanceFitness, AbsDifferenceSolutionLengthFitness, AreaLengthFitness, Fitness
+
+# endregion
+
+# region write run parameter todo remove comment
+# write_run = SaveRun()
+# write_run.write_config()
+# endregion
+
+# region define dict for fitness, crossover, mutate
 
 fitness_dict = {"AreaLengthFitness": AreaLengthFitness,
                 "AbsDifferenceSolutionLengthFitness": AbsDifferenceSolutionLengthFitness,
                 "SimpleDistanceFitness": SimpleDistanceFitness}
 crossover_dict = {"cxTwoPoint": tools.cxTwoPoint}
 mutate_dict = {"mutShuffleIndexes": tools.mutShuffleIndexes}
+# endregion
 
-# Read config.ini file
+# region Read config.ini file and write parameter(params, probs, operators)
 config_object = ConfigParser()
 config_object.read("config.ini")
-
 # params
 params = config_object["PARAMS"]
 size_population_init = int(params["size_population_init"])
 size_feature = int(params["size_feature"])  # size_feature >= 253
 seed_number = float(params["seed_number"])
 number_run = int(params["number_run"])
+permutations = bool(params["permutations"])
 
 # probs
 probs = config_object["PROBS"]
@@ -32,6 +46,7 @@ fitness = fitness_dict[operators["fitness"]](size_feature)
 crossover = crossover_dict[operators["mate"]]
 mutate = mutate_dict[operators["mutate"]]
 ######## I didnt cange the select in the code itself. it has another different param for each method
+# endregion
 
 
 possible_Moves = ['U', 'R', 'L', 'D', 'u', 'r', 'l', 'd']
@@ -46,16 +61,34 @@ def random_pop():
     return possible_Moves[move_index]
 
 
+def define_init_pop():
+    if permutations:
+        data_set_permutation = SaveRun.read_permutations()
+        random_permutation = random.sample(data_set_permutation, size_population_init)
+        return random_permutation
+
+
 toolbox = base.Toolbox()
-toolbox.register("attr_str", random_pop)
-toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.attr_str, n=size_feature)
+
+if permutations:
+    toolbox.register("random_sampling", random.sample, define_init_pop, 1)
+    toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.random_sampling, n=size_feature)
+
+else:
+    list_pop = []
+    toolbox.register("attr_str", random_pop)
+    toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.attr_str, n=size_feature)
+
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
-# define operator
+# region define operator
 toolbox.register("mate", crossover)
 toolbox.register("mutate", mutate, indpb=mutation_prob)
 toolbox.register("select", tools.selTournament, tournsize=2)
 toolbox.register("evaluate", fitness.evaluate)
+
+
+# endregion
 
 
 def main():
