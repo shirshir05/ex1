@@ -33,7 +33,7 @@ size_population_init = int(params["size_population_init"])
 size_feature = int(params["size_feature"])  # size_feature >= 253
 seed_number = float(params["seed_number"])
 number_run = int(params["number_run"])
-permutations = bool(params["permutations"])
+permutations = params["permutations"]
 
 # probs
 probs = config_object["PROBS"]
@@ -70,12 +70,11 @@ def define_init_pop():
 
 toolbox = base.Toolbox()
 
-if permutations:
+if permutations == 'True':
     toolbox.register("random_sampling", random.sample, define_init_pop, 1)
     toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.random_sampling, n=size_feature)
 
 else:
-    list_pop = []
     toolbox.register("attr_str", random_pop)
     toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.attr_str, n=size_feature)
 
