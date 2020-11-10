@@ -3,6 +3,8 @@ import random
 from deap import tools
 from configparser import ConfigParser
 
+from tqdm import tqdm
+
 from fitness import SimpleDistanceFitness, AbsDifferenceSolutionLengthFitness, AreaLengthFitness, Fitness,DistanceAndCrates
 
 
@@ -114,7 +116,7 @@ def main():
             max = fit[0]
     write_run.write_epoch(-1, max, sum, size_population_init)
 
-    for epoch in range(number_run):
+    for epoch in tqdm(range(number_run)):
         # Select the next generation individuals
         offspring = toolbox.select(pop, len(pop))
         # Clone the selected individuals
