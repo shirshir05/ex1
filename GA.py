@@ -107,14 +107,14 @@ def main():
     #print(pop)
     # Evaluate the entire population
     fitnesses = map(toolbox.evaluate, pop)
-    max = 0
+    min_fitness = -1
     sum = 0
     for ind, fit in zip(pop, fitnesses):
         ind.fitness.values = fit
         sum += fit[0]
-        if fit[0] > max:
-            max = fit[0]
-    write_run.write_epoch(-1, max, sum, size_population_init)
+        if fit[0] < min_fitness:
+            min_fitness = fit[0]
+    write_run.write_epoch(-1, min_fitness, sum, size_population_init)
 
     for epoch in tqdm(range(number_run)):
         # Select the next generation individuals
@@ -122,7 +122,7 @@ def main():
         # Clone the selected individuals
         offspring = list(map(toolbox.clone, offspring))
 
-        max_fitness = 0
+        min_fitness = 0
         sum_fitness = 0
 
         # Apply crossover and mutation on the offspring
@@ -134,10 +134,10 @@ def main():
             else:
                 sum_fitness += child1.fitness.values[0]
                 sum_fitness += child2.fitness.values[0]
-                if max_fitness < child1.fitness.values[0]:
-                    max_fitness = child1.fitness.values[0]
-                if max_fitness < child2.fitness.values[0]:
-                    max_fitness = child2.fitness.values[0]
+                if min_fitness > child1.fitness.values[0]:
+                    min_fitness = child1.fitness.values[0]
+                if min_fitness > child2.fitness.values[0]:
+                    min_fitness = child2.fitness.values[0]
 
         for mutant in offspring:
             if random.random() < mutation_prob:
@@ -150,10 +150,10 @@ def main():
         for ind, fit in zip(invalid_ind, fitnesses):
             ind.fitness.values = fit
             sum_fitness += ind.fitness.values[0]
-            if max_fitness < ind.fitness.values[0]:
-                max_fitness = ind.fitness.values[0]
+            if min_fitness < ind.fitness.values[0]:
+                min_fitness = ind.fitness.values[0]
 
-        write_run.write_epoch(epoch, max_fitness, sum_fitness, size_population_init)
+        write_run.write_epoch(epoch, min_fitness, sum_fitness, size_population_init)
 
         # The population is entirely replaced by the offspring
         pop[:] = offspring
