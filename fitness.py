@@ -66,6 +66,35 @@ class AreaLengthFitness(Fitness):
             fitness = 0
         return fitness,
 
+class AreaLengthFitnessNew(Fitness):
+    '''
+    – Population size: 1000
+    – Generations: 100
+    – Chromosome length: 20 (maximum solution length, = GENE_LENGTH)
+    – Mutation rate: 0.07
+    - selection- 0.95 of the population
+    - crossover: one point crossover
+    - 50 runs
+    '''
+
+    def __init__(self, GENE_LENGTH):
+        super().__init__(GENE_LENGTH)
+
+    def evaluate(self, child):
+        self.game.play(level=1, list_move=child)
+        fitness = 300
+        # This part rewards short sequences
+        fitness -= (self.GENE_LENGTH - len(child)) * (200 / self.GENE_LENGTH)
+
+        area_f = 50 * self.game.count_left_crates(level=1)
+        if area_f == 300:
+            fitness += 300
+        elif (area_f > 0):
+            fitness -= (1 - area_f) * 200
+        else:
+            fitness = 0
+        return fitness,
+
 
 # =======================================================================================#
 
