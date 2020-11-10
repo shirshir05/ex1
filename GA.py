@@ -1,6 +1,3 @@
-# region import
-import itertools
-
 from deap import base, creator
 import random
 from deap import tools
@@ -16,9 +13,9 @@ from fitness import SimpleDistanceFitness, AbsDifferenceSolutionLengthFitness, A
 
 # endregion
 
-# region write run parameter todo remove comment
-# write_run = SaveRun()
-# write_run.write_config()
+# region write run parameter
+write_run = SaveRun()
+write_run.write_config()
 # endregion
 
 # region define dict for fitness, crossover, mutate
@@ -29,11 +26,9 @@ fitness_dict = {"AreaLengthFitness": AreaLengthFitness,
                 "DistanceAndCrates": DistanceAndCrates}
 
 crossover_dict = {"cxTwoPoint": tools.cxTwoPoint,
-                  "cxTwoPoint":tools.cxTwoPoint,
                   "cxUniform":tools.cxUniform}
 
 mutate_dict = {"mutShuffleIndexes": tools.mutShuffleIndexes}
-
 crossover_dict = {"cxTwoPoint": tools.cxTwoPoint}
 mutate_dict = {"mutShuffleIndexes": tools.mutShuffleIndexes}
 # endregion
@@ -47,7 +42,7 @@ size_population_init = int(params["size_population_init"])
 size_feature = int(params["size_feature"])  # size_feature >= 253
 seed_number = float(params["seed_number"])
 number_run = int(params["number_run"])
-permutations = params["permutations"]
+permutations = params.getboolean("permutations")
 
 # probs
 probs = config_object["PROBS"]
@@ -80,16 +75,15 @@ def random_pop():
     return possible_Moves[move_index]
 
 def define_init_pop():
-    if permutations:
-        data_set_permutation = SaveRun.read_permutations()
-        random_permutation = random.sample(data_set_permutation, size_population_init)
-        return random_permutation
+    data_set_permutation = SaveRun.read_permutations()
+    random_permutation = random.sample(data_set_permutation, size_population_init)
+    return random_permutation
 
 
 toolbox = base.Toolbox()
 
-if permutations == 'True':
-    toolbox.register("random_sampling", random.sample, define_init_pop, 1)
+if permutations:
+    toolbox.register("random_sampling", random.sample, define_init_pop(), 1)
     toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.random_sampling, n=size_feature)
 
 else:
@@ -111,14 +105,23 @@ def main():
     #print(pop)
     # Evaluate the entire population
     fitnesses = map(toolbox.evaluate, pop)
+    max = 0
+    sum = 0
     for ind, fit in zip(pop, fitnesses):
         ind.fitness.values = fit
+        sum += fit[0]
+        if fit[0] > max:
+            max = fit[0]
+    write_run.write_epoch(-1, max, sum, size_population_init)
 
-    for g in range(number_run):
+    for epoch in range(number_run):
         # Select the next generation individuals
         offspring = toolbox.select(pop, len(pop))
         # Clone the selected individuals
         offspring = list(map(toolbox.clone, offspring))
+
+        max_fitness = 0
+        sum_fitness = 0
 
         # Apply crossover and mutation on the offspring
         for child1, child2 in zip(offspring[::2], offspring[1::2]):
@@ -126,6 +129,13 @@ def main():
                 toolbox.mate(child1, child2)
                 del child1.fitness.values
                 del child2.fitness.values
+            else:
+                sum_fitness += child1.fitness.values[0]
+                sum_fitness += child2.fitness.values[0]
+                if max_fitness < child1.fitness.values[0]:
+                    max_fitness = child1.fitness.values[0]
+                if max_fitness < child2.fitness.values[0]:
+                    max_fitness = child2.fitness.values[0]
 
         for mutant in offspring:
             if random.random() < mutation_prob:
@@ -137,7 +147,11 @@ def main():
         fitnesses = map(toolbox.evaluate, invalid_ind)
         for ind, fit in zip(invalid_ind, fitnesses):
             ind.fitness.values = fit
-            print(fit)
+            sum_fitness += ind.fitness.values[0]
+            if max_fitness < ind.fitness.values[0]:
+                max_fitness = ind.fitness.values[0]
+
+        write_run.write_epoch(epoch, max_fitness, sum_fitness, size_population_init)
 
         # The population is entirely replaced by the offspring
         pop[:] = offspring

@@ -20,10 +20,13 @@ class SaveRun:
         config_object.read("config.ini")
         dict_config = [{section: dict(config_object[section]) for section in config_object.sections()}]
         with open(self.path, 'w', newline='') as myfile:
-            writer = csv.DictWriter(myfile, quoting=csv.QUOTE_ALL, fieldnames=config_object.sections())
-            writer.writeheader()
+            writer_list = csv.writer(myfile, delimiter=',')
             for data in dict_config:
-                writer.writerow(data)
+                for section in data:
+                    writer_list.writerow([section])
+                    writer_list.writerow(list(data[section].items()))
+            writer_header = csv.writer(myfile, delimiter=',')
+            writer_header.writerow(['epoch', 'max', 'sum', 'average'])
 
     @staticmethod
     def write_permutations():
@@ -33,7 +36,7 @@ class SaveRun:
         """
         def string_split():
             # string = "ullluuuLUllDlldddrRRRRRRRRRRRRurDllllllllllllllulldRRRRRRRRRRRRRdrUluRRlldlllllluuululldDDuulldddrRR RRRRRRRRRRlllllllluuulLulDDDuulldddrRRRRRRRRRRRurDlllllllluuululuurDDllddddrrruuuLLulDDDuulldddrRRRRRRRRRRdrUluRldlllllluuuluuullDDDDDuulldddrRRRRRRRRRRR"
-            string = "ulsss"
+            string = "ulldddrRR"
             list_move = []
             for i in string:
                 if i == " ":
@@ -42,6 +45,7 @@ class SaveRun:
             return list_move
 
         list_solution = string_split()
+        # todo change permutations
         data_set_permutation = list(itertools.permutations(list_solution))
         with open(str(pathlib.Path().absolute()) + "/File/permutations.csv", 'w') as file:
             wr = csv.writer(file, quoting=csv.QUOTE_ALL)
@@ -59,9 +63,15 @@ class SaveRun:
             data = [ele for ele in data if ele != []]
             return data
 
+    def write_epoch(self, epoch, max, sum, number_pop):
+        with open(self.path, 'a', newline='') as myfile:
+            writer = csv.writer(myfile, delimiter=',')
+            writer.writerow([epoch, max, sum, sum/number_pop])
+            myfile
+
 
 if __name__ == '__main__':
     run = SaveRun()
-    run.write_permutations()
-    run.read_permutations()
-   # run.write_config()
+    # run.write_permutations()
+    # run.read_permutations()
+    run.write_config()
