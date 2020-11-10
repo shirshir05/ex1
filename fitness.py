@@ -78,7 +78,6 @@ class SimpleDistanceFitness(Fitness):
     def evaluate(self, child):
         self.game.play(level=1, list_move=child)
         min_distances = []
-
         row_pos = 0
         for row in self.game.matrix[0]:
             row_pos = row_pos + 1
@@ -94,7 +93,7 @@ class SimpleDistanceFitness(Fitness):
                         for cell_target in row_target:
                             target_col_pos = target_col_pos + 1
                             if cell_target == '.':
-                                d = np.sqrt(((row_pos - target_row_pos) ** 2)+ ((col_pos - target_col_pos) ** 2))
+                                d = np.sqrt(((row_pos - target_row_pos) ** 2) + ((col_pos - target_col_pos) ** 2))
                                 distances.append(d)
                     min_d = np.min(distances)
                     min_distances.append(min_d)
@@ -144,9 +143,66 @@ class AbsDifferenceSolutionLengthFitness(Fitness):
 
         return np.mean(abs_difference + sol_length),
 
+
+# =======================================================================================#
+# distance & crates:
+class DistanceAndCrates(Fitness):
+
+    def __init__(self, GENE_LENGTH):
+        super().__init__(GENE_LENGTH)
+
+    def sum_distance(self):
+        min_distances = []
+        row_pos = 0
+        for row in self.game.matrix[0]:
+            row_pos = row_pos + 1
+            col_pos = 0
+            for cell in row:
+                col_pos = col_pos + 1
+                if cell == '$':
+                    distances = []
+                    target_row_pos = 0
+                    for row_target in self.game.matrix[0]:
+                        target_row_pos = target_row_pos + 1
+                        target_col_pos = 0
+                        for cell_target in row_target:
+                            target_col_pos = target_col_pos + 1
+                            if cell_target == '.':
+                                d = np.sqrt(((row_pos - target_row_pos) ** 2) + ((col_pos - target_col_pos) ** 2))
+                                distances.append(d)
+                    min_d = np.min(distances)
+                    min_distances.append(min_d)
+        return np.sum(min_distances)
+
+    def area_fitness(self):
+        # a complete solution gains an absolute value of 0 for this component;
+        if self.game.is_completed(level=1):
+            return 0
+        # if deadlock is reached (i.e., the monk is unable to move) a value of 300 is awarded
+        row, col, pos = self.game.worker(level=1)
+        if self.game.is_deadlock(level=1):
+            # print("deadlock")
+            return 300
+        # give a
+        else:
+            left_crates = self.game.count_left_crates(level=1)
+            # if left_crates==6:
+            #     print("all crates left")
+            return (50 * left_crates)
+
+    def evaluate(self, child):
+        self.game.play(level=1, list_move=child)
+
+        area_f = self.area_fitness()
+        dis= self.sum_distance()
+
+        return area_f+dis,
+
+
 # =======================================================================================#
 # very simple fitness: (least number of moves required to solve the puzzle)
 
+
 # string = "ullluuuLUllDlldddrRRRRRRRRRRRRurDllllllllllllllulldRRRRRRRRRRRRRdrUluRRlldlllllluuululldDDuulldddrRR RRRRRRRRRRlllllllluuulLulDDDuulldddrRRRRRRRRRRRurDlllllllluuululuurDDllddddrrruuuLLulDDDuulldddrRRRRRRRRRRdrUluRldlllllluuuluuullDDDDDuulldddrRRRRRRRRRRR"
-# fitness = AreaLengthFitness(300)
+# fitness = DistanceAndCrates(300)
 # print(fitness.evaluate(string)[0])

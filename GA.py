@@ -2,6 +2,13 @@ from deap import base, creator
 import random
 from deap import tools
 from configparser import ConfigParser
+
+from fitness import SimpleDistanceFitness, AbsDifferenceSolutionLengthFitness, AreaLengthFitness, Fitness,DistanceAndCrates
+
+
+
+
+from SaveRun import SaveRun
 from fitness import SimpleDistanceFitness, AbsDifferenceSolutionLengthFitness, AreaLengthFitness, Fitness
 
 # endregion
@@ -15,7 +22,15 @@ write_run.write_config()
 
 fitness_dict = {"AreaLengthFitness": AreaLengthFitness,
                 "AbsDifferenceSolutionLengthFitness": AbsDifferenceSolutionLengthFitness,
-                "SimpleDistanceFitness": SimpleDistanceFitness}
+                "SimpleDistanceFitness": SimpleDistanceFitness,
+                "DistanceAndCrates": DistanceAndCrates}
+
+crossover_dict = {"cxTwoPoint": tools.cxTwoPoint,
+                  "cxTwoPoint":tools.cxTwoPoint,
+                  "cxUniform":tools.cxUniform}
+
+mutate_dict = {"mutShuffleIndexes": tools.mutShuffleIndexes}
+
 crossover_dict = {"cxTwoPoint": tools.cxTwoPoint}
 mutate_dict = {"mutShuffleIndexes": tools.mutShuffleIndexes}
 # endregion
@@ -51,11 +66,16 @@ random.seed(seed_number)
 creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
 creator.create("Individual", list, fitness=creator.FitnessMin)
 
+def mutate_rand(individual, indpb):
+    size = len(individual)
+    for i in range(size):
+        if random.random() < indpb:
+            individual[i] = random_pop()
+    return individual,
 
 def random_pop():
     move_index = random.randint(0, 7)
     return possible_Moves[move_index]
-
 
 def define_init_pop():
     data_set_permutation = SaveRun.read_permutations()
@@ -75,19 +95,22 @@ else:
 
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
+# define operator
+toolbox.register("mate", tools.cxMessyOnePoint)
+toolbox.register("mutate", mutate, indpb=0.4)
+
+toolbox.register("select", tools.selTournament, tournsize=5)
 # region define operator
 toolbox.register("mate", crossover)
 toolbox.register("mutate", mutate, indpb=mutation_prob)
 toolbox.register("select", tools.selTournament, tournsize=2)
 toolbox.register("evaluate", fitness.evaluate)
-
-
 # endregion
 
 
 def main():
     pop = toolbox.population(n=size_population_init)
-
+    #print(pop)
     # Evaluate the entire population
     fitnesses = map(toolbox.evaluate, pop)
     max = 0
