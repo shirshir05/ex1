@@ -26,11 +26,9 @@ fitness_dict = {"AreaLengthFitness": AreaLengthFitness,
                 "DistanceAndCrates": DistanceAndCrates}
 
 crossover_dict = {"cxTwoPoint": tools.cxTwoPoint,
-                  "cxTwoPoint":tools.cxTwoPoint,
                   "cxUniform":tools.cxUniform}
 
 mutate_dict = {"mutShuffleIndexes": tools.mutShuffleIndexes}
-
 crossover_dict = {"cxTwoPoint": tools.cxTwoPoint}
 mutate_dict = {"mutShuffleIndexes": tools.mutShuffleIndexes}
 # endregion
