@@ -64,4 +64,4 @@ if __name__ == '__main__':
     run = SaveRun()
     run.write_permutations()
     run.read_permutations()
-    # run.write_config()
+   # run.write_config()

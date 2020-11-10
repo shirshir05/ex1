@@ -62,7 +62,6 @@ mutate = mutate_dict[operators["mutate"]]
 ######## I didnt cange the select in the code itself. it has another different param for each method
 # endregion
 
-
 possible_Moves = ['U', 'R', 'L', 'D', 'u', 'r', 'l', 'd']
 random.seed(seed_number)
 
@@ -99,11 +98,6 @@ else:
 
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
-# define operator
-toolbox.register("mate", tools.cxMessyOnePoint)
-toolbox.register("mutate", mutate, indpb=0.4)
-
-toolbox.register("select", tools.selTournament, tournsize=5)
 # region define operator
 toolbox.register("mate", crossover)
 toolbox.register("mutate", mutate, indpb=mutation_prob)
