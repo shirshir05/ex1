@@ -32,7 +32,7 @@ class SaveRun:
             writer_list.writerow(list_value)
 
             writer_header = csv.writer(myfile, delimiter=',')
-            writer_header.writerow(['epoch', 'max', 'sum', 'average'])
+            writer_header.writerow(['epoch', 'min', 'sum', 'average'])
 
     @staticmethod
     def write_permutations():

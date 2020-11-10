@@ -9,7 +9,8 @@ from fitness import SimpleDistanceFitness, AbsDifferenceSolutionLengthFitness, A
 
 
 from SaveRun import SaveRun
-from fitness import SimpleDistanceFitness, AbsDifferenceSolutionLengthFitness, AreaLengthFitness, Fitness
+from fitness import SimpleDistanceFitness, AbsDifferenceSolutionLengthFitness, AreaLengthFitness, Fitness, \
+    AreaLengthFitnessNew
 
 # endregion
 
@@ -23,7 +24,8 @@ write_run.write_config()
 fitness_dict = {"AreaLengthFitness": AreaLengthFitness,
                 "AbsDifferenceSolutionLengthFitness": AbsDifferenceSolutionLengthFitness,
                 "SimpleDistanceFitness": SimpleDistanceFitness,
-                "DistanceAndCrates": DistanceAndCrates}
+                "DistanceAndCrates": DistanceAndCrates,
+                "AreaLengthFitnessNew": AreaLengthFitnessNew}
 
 crossover_dict = {"cxTwoPoint": tools.cxTwoPoint,
                   "cxUniform":tools.cxUniform}
