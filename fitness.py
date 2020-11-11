@@ -38,7 +38,7 @@ class AreaLengthFitness(Fitness):
             return 0
         # if deadlock is reached (i.e., the monk is unable to move) a value of 300 is awarded
         row, col, pos = self.game.worker(level=1)
-        if self.game.is_deadlock(level=1):
+        if self.game.is_deadlock_player(level=1):
             # print("deadlock")
             return 300
         # give a
@@ -179,8 +179,7 @@ class DistanceAndCrates(Fitness):
         if self.game.is_completed(level=1):
             return 0
         # if deadlock is reached (i.e., the monk is unable to move) a value of 300 is awarded
-        row, col, pos = self.game.worker(level=1)
-        if self.game.is_deadlock(level=1):
+        if self.game.is_deadlock_player(level=1):
             # print("deadlock")
             return 300
         # give a
@@ -191,18 +190,21 @@ class DistanceAndCrates(Fitness):
             return (50 * left_crates)
 
     def evaluate(self, child):
+
         self.game.play(level=1, list_move=child)
 
-        area_f = self.area_fitness()
-        dis= self.sum_distance()
 
-        return area_f+dis,
+        boxes_deadlock = self.game.crate_deadlock(1)
+
+        area_f = self.area_fitness()
+        dis = self.sum_distance()
+
+        return area_f + dis ,
 
 
 # =======================================================================================#
-# very simple fitness: (least number of moves required to solve the puzzle)
 
-
-# string = "ullluuuLUllDlldddrRRRRRRRRRRRRurDllllllllllllllulldRRRRRRRRRRRRRdrUluRRlldlllllluuululldDDuulldddrRR RRRRRRRRRRlllllllluuulLulDDDuulldddrRRRRRRRRRRRurDlllllllluuululuurDDllddddrrruuuLLulDDDuulldddrRRRRRRRRRRdrUluRldlllllluuuluuullDDDDDuulldddrRRRRRRRRRRR"
-# fitness = DistanceAndCrates(300)
-# print(fitness.evaluate(string)[0])
+if __name__ == '__main__':
+    string = "ullluuuLUllDlldddrRRRRRRRRRRRRurDllllllllllllllulldRRRRRRRRRRRRRdrUluRRlldlllllluuululldDDuulldddrRR RRRRRRRRRRlllllllluuulLulDDDuulldddrRRRRRRRRRRRurDlllllllluuululuurDDllddddrrruuuLLulDDDuulldddrRRRRRRRRRRdrUluRldlllllluuuluuullDDDDDuulldddrRRRRRRRRRRR"
+    fitness = DistanceAndCrates(len(string))
+    print(fitness.evaluate(string)[0])
