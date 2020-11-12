@@ -2,16 +2,9 @@ from deap import base, creator
 import random
 from deap import tools
 from configparser import ConfigParser
-from fitness import SimpleDistanceFitness, AbsDifferenceSolutionLengthFitness, AreaLengthFitness, Fitness,DistanceAndBox
-import itertools
-from itertools import permutations
+from fitness import SimpleDistanceFitness, AbsDifferenceSolutionLengthFitness, AreaLengthFitness, DistanceAndBox
 from tqdm import tqdm
-
-from Game import Game
-from fitness import SimpleDistanceFitness, AbsDifferenceSolutionLengthFitness, AreaLengthFitness, Fitness, \
-    DistanceAndCrates
 from SaveRun import SaveRun
-from fitness import SimpleDistanceFitness, AbsDifferenceSolutionLengthFitness, AreaLengthFitness
 
 # region write run parameter
 write_run = SaveRun()
@@ -72,6 +65,7 @@ def mutate_rand(individual, indpb):
     return individual,
 
 
+# region init pop
 def define_init_pop_random():
     move_index = random.randint(0, 7)
     return possible_Moves[move_index]
@@ -80,6 +74,7 @@ def define_init_pop_random():
 def define_init_pop_from_solution():
     data_set_permutation = SaveRun.read_permutations()
     return random.sample(data_set_permutation, 1)[0]
+# endregion
 
 
 toolbox = base.Toolbox()

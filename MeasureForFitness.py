@@ -1,6 +1,6 @@
 from configparser import ConfigParser
 
-from pandas import np
+import numpy as np
 
 
 class MeasureForFitness:
@@ -53,7 +53,9 @@ class MeasureForFitness:
          """
         if not self.game.can_move(level, 0, -1) and not self.game.can_move(level, 0, 1):
             if not self.game.can_move(level, -1, 0) and not self.game.can_move(level, 1, 0):
-                return self.Measure["worker_in_deadlock"]
+                return int(self.Measure["worker_in_deadlock"])
+            else:
+                return 0
         else:
             return 0
 
@@ -67,9 +69,9 @@ class MeasureForFitness:
             for cell in row:
                 if cell == '$':
                     counter = counter + 1
-        return self.Measure["left_box"] * counter
+        return int(self.Measure["left_box"]) * counter
 
-    def euclidean_distance(self):
+    def euclidean_distance(self, from_box):
         """
             :Return
                 The minimum distance for box from the dock * self.Measure["euclidean_distance"]
@@ -89,12 +91,12 @@ class MeasureForFitness:
                         target_col_pos = -1
                         for cell_target in row_target:
                             target_col_pos = target_col_pos + 1
-                            if cell_target == '.':
+                            if cell_target == from_box:
                                 d = np.sqrt(((row_pos - target_row_pos) ** 2) + ((col_pos - target_col_pos) ** 2))
                                 distances.append(d)
                     min_d = np.min(distances)
                     min_distances.append(min_d)
-        return self.Measure["euclidean_distance"] * np.sum(min_distances)
+        return int(self.Measure["euclidean_distance"]) * np.sum(min_distances)
 
     def absolute_distance(self, x_val, range_min, range_max, max):
         """
@@ -107,4 +109,32 @@ class MeasureForFitness:
         else:
             return (x_val - range_max) / (max - range_max)
 
-
+    def box_deadlock(self, level):
+        """
+            :Return
+                The number box in deadlock
+        """
+        counter = 0
+        ind_row = 0
+        for row in self.game.matrix[level - 1]:
+            ind_col = 0
+            for cell in row:
+                if cell == '$':
+                    # right top corner
+                    if row[ind_col + 1] in ['#', '*', '$'] and self.game.matrix[level - 1][ind_row - 1][ind_col] in ['#', '*', '$']:
+                        counter = counter + 1
+                    # left top corner
+                    if (row[ind_col - 1] in ['#', '*', '$'] and self.game.matrix[level - 1][ind_row - 1][ind_col] in [
+                        '#', '*', '$']):
+                        counter = counter + 1
+                    # right bottom corner
+                    if (row[ind_col - 1] in ['#', '*', '$'] and self.game.matrix[level - 1][ind_row + 1][ind_col] in [
+                        '#', '*', '$']):
+                        counter = counter + 1
+                    # right bottom corner
+                    if (row[ind_col + 1] in ['#', '*', '$'] and self.game.matrix[level - 1][ind_row + 1][ind_col] in [
+                        '#', '*', '$']):
+                        counter = counter + 1
+                ind_col = ind_col + 1
+            ind_row = ind_row + 1
+        return int(self.Measure["box_deadlock"]) * counter
