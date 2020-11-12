@@ -102,7 +102,7 @@ class Game:
                     return False
         return True
 
-    def count_left_crates(self, level):
+    def count_left_crates(self,level):
         counter = 0
         for row in self.matrix[level - 1]:
             for cell in row:
@@ -246,29 +246,34 @@ class Game:
             return False
         return True
 
+    def is_deadlock(self,level):
+        if not self.can_move(level, 0, -1) and not self.can_move(level, 0, 1):
+            if not self.can_move(level, -1, 0) and not self.can_move(level, 1, 0):
+                return True
+        else:
+            return False
+
+
+
     def play(self, level, list_move):
         index = 0
         for move in list_move:
             if self.is_completed(level):
                 return True
             if move == 'L' or move == 'l':
-                if not self.move(level, 0, -1, True):
-                    return -1
+                self.move(level, 0, -1, True)
             elif move == 'R' or move == 'r':
-                if not self.move(level, 0, 1, True):
-                    return -1
+               self.move(level, 0, 1, True)
             elif move == 'U' or move == 'u':
-                if not self.move(level, -1, 0, True):
-                    return -1
-            elif move == 'D' or move == 'd':
-                if not self.move(level, 1, 0, True):
-                    return -1
+                self.move(level, -1, 0, True)
+            elif move == 'D' or move =='d':
+                self.move(level, 1, 0, True)
             index += 1
         return self.is_completed(level)  # True/ False
 
     @staticmethod
     def string_split():
-        string = "ullluuuLUllDlldddrRRRRRRRRRRRRurDllllllllllllllulldRRRRRRRRRRRRRdrUluRRlldlllllluuululldDDuulldddrRRRRRRRRRRRRlllllllluuulLulDDDuulldddrRRRRRRRRRRRurDlllllllluuululuurDDllddddrrruuuLLulDDDuulldddrRRRRRRRRRRdrUluRldlllllluuuluuullDDDDDuulldddrRRRRRRRRRRR"
+        string = "ullluuuLUllDlldddrRRRRRRRRRRRRurDllllllllllllllulldRRRRRRRRRRRRRdrUluRRlldlllllluuululldDDuulldddrRR RRRRRRRRRRlllllllluuulLulDDDuulldddrRRRRRRRRRRRurDlllllllluuululuurDDllddddrrruuuLLulDDDuulldddrRRRRRRRRRRdrUluRldlllllluuuluuullDDDDDuulldddrRRRRRRRRRRR"
         list_move = []
         for i in string:
             if i == " ":
@@ -281,3 +286,4 @@ if __name__ == '__main__':
     game = Game("one_input.txt", 1)
     # game.print_board()
     print(game.play(1, Game.string_split()))
+
