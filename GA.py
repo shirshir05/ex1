@@ -110,7 +110,7 @@ toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
 # region define operator
 toolbox.register("mate", crossover)
-toolbox.register("mutate", mutate_rand, indpb=mutation_prob)
+toolbox.register("mutate", mutate, indpb=mutation_prob)
 toolbox.register("select", tools.selTournament, tournsize=2)
 toolbox.register("evaluate", fitness.evaluate)
 
