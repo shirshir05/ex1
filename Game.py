@@ -56,6 +56,21 @@ class Game:
                 print(self.matrix[i][j])
             print("")
 
+    def write_board(self, name, epoch, worker_in_deadlock, count_left_box, euclidean_distance):
+        list_board = [[i for i in range(0, len(self.matrix))]]
+        for i in range(0, len(self.matrix)):
+            for j in range(0, len((self.matrix[i]))):
+                list_board[i].append(self.matrix[i][j])
+        with open(str(name) + '.txt', 'a') as filehandle:
+            filehandle.write("epoch = %d,  " %epoch)
+            filehandle.write("worker_in_deadlock = %d,  " %worker_in_deadlock)
+            filehandle.write("euclidean_distance = %d " %euclidean_distance)
+            filehandle.write("count_left_box = %d " %count_left_box)
+            for listitem in list_board:
+                for item in listitem:
+                    filehandle.write('%s\n' % item)
+
+
     def get_matrix(self):
         return self.matrix
 

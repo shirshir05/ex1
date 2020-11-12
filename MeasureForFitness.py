@@ -25,16 +25,20 @@ class MeasureForFitness:
         list_free = []
         list_dock = []
         worker = None
+        index_row = 0
         for row in self.game.matrix[level - 1]:
+            index_col = 0
             for col in row:
                 if col == "$":
-                    list_box.append((row, col))
+                    list_box.append((index_row, index_col))
                 elif col == " ":
-                    list_free.append((row, col))
+                    list_free.append((index_row, index_col))
                 elif col == "*" or col == "." or "+":
-                    list_dock.append((row, col))
+                    list_dock.append((index_row, index_col))
                 elif col == "@" or col == "+":
-                    worker = (row, col)
+                    worker = (index_row, index_col)
+                index_col += 1
+            index_row += 1
         return list_box, list_free, list_dock, worker
 
     def gen_length(self, gen_length):
@@ -92,11 +96,12 @@ class MeasureForFitness:
                         for cell_target in row_target:
                             target_col_pos = target_col_pos + 1
                             if cell_target == from_box:
-                                d = np.sqrt(((row_pos - target_row_pos) ** 2) + ((col_pos - target_col_pos) ** 2))
+                                d = np.sqrt (((row_pos - target_row_pos) ** 2) + ((col_pos - target_col_pos) ** 2))
                                 distances.append(d)
                     min_d = np.min(distances)
-                    min_distances.append(min_d)
-        return int(self.Measure["euclidean_distance"]) * np.sum(min_distances)
+                    if min_d != 0:
+                        min_distances.append(min_d)
+        return int(self.Measure["euclidean_distance"]) * np.min(min_distances)
 
     def absolute_distance(self, x_val, range_min, range_max, max):
         """
