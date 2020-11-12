@@ -228,6 +228,7 @@ class DistanceAndCrates(Fitness):
         return area_f+dis,
 
 
+
 # =======================================================================================#
 # very simple fitness: (least number of moves required to solve the puzzle)
 
