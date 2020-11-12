@@ -102,14 +102,6 @@ class Game:
                     return False
         return True
 
-    def count_left_crates(self, level):
-        counter = 0
-        for row in self.matrix[level - 1]:
-            for cell in row:
-                if cell == '$':
-                    counter = counter + 1
-        return counter
-
     def move_box(self, level, x, y, a, b):
         #        (x,y) -> move to do
         #        (a,b) -> box to move
@@ -127,16 +119,6 @@ class Game:
         elif current_box == '*' and future_box == '.':
             self.set_content(level, x + a, y + b, '*')
             self.set_content(level, x, y, '.')
-
-    # def unmove(self):
-    #     if not self.queue.empty():
-    #         movement = self.queue.get()
-    #         if movement[2]:
-    #             current = self.worker()
-    #             self.move(movement[0] * -1, movement[1] * -1, False)
-    #             self.move_box(current[0] + movement[0], current[1] + movement[1], movement[0] * -1, movement[1] * -1)
-    #         else:
-    #             self.move(movement[0] * -1, movement[1] * -1, False)
 
     def move(self, level, x, y, save):
         if self.can_move(level, x, y):
@@ -206,15 +188,6 @@ class Game:
             # can't move
             return False
         return True
-
-    def is_deadlock(self, level):
-        if not self.can_move(level, 0, -1) and not self.can_move(level, 0, 1):
-            if not self.can_move(level, -1, 0) and not self.can_move(level, 1, 0):
-                return True
-        else:
-            return False
-
-
 
     def play(self, level, list_move):
         index = 0

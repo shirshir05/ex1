@@ -1,16 +1,12 @@
+# region import
+
 from deap import base, creator
 import random
 from deap import tools
 from configparser import ConfigParser
-
-from fitness import SimpleDistanceFitness, AbsDifferenceSolutionLengthFitness, AreaLengthFitness, Fitness,DistanceAndCrates
-
-
-
-
+from fitness import SimpleDistanceFitness, AbsDifferenceSolutionLengthFitness, AreaLengthFitness, Fitness,DistanceAndBox
 from SaveRun import SaveRun
-from fitness import SimpleDistanceFitness, AbsDifferenceSolutionLengthFitness, AreaLengthFitness, Fitness, \
-    AreaLengthFitnessNew
+from fitness import SimpleDistanceFitness, AbsDifferenceSolutionLengthFitness, AreaLengthFitness
 
 # endregion
 
@@ -24,8 +20,7 @@ write_run.write_config()
 fitness_dict = {"AreaLengthFitness": AreaLengthFitness,
                 "AbsDifferenceSolutionLengthFitness": AbsDifferenceSolutionLengthFitness,
                 "SimpleDistanceFitness": SimpleDistanceFitness,
-                "DistanceAndCrates": DistanceAndCrates,
-                "AreaLengthFitnessNew": AreaLengthFitnessNew}
+                "DistanceAndBox": DistanceAndBox}
 
 crossover_dict = {"cxTwoPoint": tools.cxTwoPoint,
                   "cxUniform":tools.cxUniform}
