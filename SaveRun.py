@@ -1,8 +1,7 @@
 import csv
-import itertools
 import pathlib
 from configparser import ConfigParser
-from datetime import date, datetime
+from datetime import datetime
 import random
 
 
@@ -48,7 +47,7 @@ class SaveRun:
                     continue
                 list_move.append(i)
             return list_move
-        opt_solution = "ullluuuLUllDlldddrRRRRRRRRRRRRurDllllllllllllllulldRRRRRRRRRRRRRdrUluRRlldlllllluuululldDDuulldddrRR RRRRRRRRRRlllllllluuulLulDDDuulldddrRRRRRRRRRRRurDlllllllluuululuurDDllddddrrruuuLLulDDDuulldddrRRRRRRRRRRdrUluRldlllllluuuluuullDDDDDuulldddrRRRRRRRRRRR"
+        opt_solution = "ullluuuLUllDlldddrRRRRRRRRRRRRurDllllllllllllllulldRRRRRRRRRRRRRdrUluRRlldlllllluuululldDDuulldddrRRRRRRRRRRRRlllllllluuulLulDDDuulldddrRRRRRRRRRRRurDlllllllluuululuurDDllddddrrruuuLLulDDDuulldddrRRRRRRRRRRdrUluRldlllllluuuluuullDDDDDuulldddrRRRRRRRRRRR"
         size_feature = 500
         size_population_init = 1000
         data_set_permutation = []
@@ -77,7 +76,6 @@ class SaveRun:
         with open(self.path, 'a', newline='') as myfile:
             writer = csv.writer(myfile, delimiter=',')
             writer.writerow([epoch, min_fitness, sum, sum/number_pop])
-            myfile
 
 
 if __name__ == '__main__':
