@@ -102,12 +102,51 @@ class Game:
                     return False
         return True
 
-    def count_left_crates(self, level):
+    def count_left_crates(self,level):
         counter = 0
         for row in self.matrix[level - 1]:
             for cell in row:
                 if cell == '$':
                     counter = counter + 1
+        return counter
+
+    def is_deadlock_player(self, level):
+        if not self.can_move(level, 0, -1) and not self.can_move(level, 0, 1):
+            if not self.can_move(level, -1, 0) and not self.can_move(level, 1, 0):
+                return True
+        else:
+            return False
+
+    def crate_deadlock(self, level):
+        counter = 0
+        #self.print_board()
+        ind_row = 0
+        for row in self.matrix[level - 1]:
+            ind_col = 0
+            for cell in row:
+                if cell == '$':
+                    # right top corner
+                    if (row[ind_col + 1] in ['#', '*', '$'] and self.matrix[level - 1][ind_row - 1][ind_col] in ['#',
+                                                                                                                 '*',
+                                                                                                                 '$']):
+                        counter = counter + 1
+                    # left top corner
+                    if (row[ind_col - 1] in ['#', '*', '$'] and self.matrix[level - 1][ind_row - 1][ind_col] in ['#',
+                                                                                                                 '*',
+                                                                                                                 '$']):
+                        counter = counter + 1
+                    # right bottom corner
+                    if (row[ind_col - 1] in ['#', '*', '$'] and self.matrix[level - 1][ind_row + 1][ind_col] in ['#',
+                                                                                                                 '*',
+                                                                                                                 '$']):
+                        counter = counter + 1
+                    # right bottom corner
+                    if (row[ind_col + 1] in ['#', '*', '$'] and self.matrix[level - 1][ind_row + 1][ind_col] in ['#',
+                                                                                                                 '*',
+                                                                                                                 '$']):
+                        counter = counter + 1
+                ind_col = ind_col + 1
+            ind_row = ind_row + 1
         return counter
 
     def move_box(self, level, x, y, a, b):
@@ -207,7 +246,7 @@ class Game:
             return False
         return True
 
-    def is_deadlock(self, level):
+    def is_deadlock(self,level):
         if not self.can_move(level, 0, -1) and not self.can_move(level, 0, 1):
             if not self.can_move(level, -1, 0) and not self.can_move(level, 1, 0):
                 return True
