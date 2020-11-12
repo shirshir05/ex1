@@ -5,6 +5,8 @@ from configparser import ConfigParser
 import itertools
 from itertools import permutations
 from tqdm import tqdm
+
+from Game import Game
 from fitness import SimpleDistanceFitness, AbsDifferenceSolutionLengthFitness, AreaLengthFitness, Fitness, \
     DistanceAndCrates
 from SaveRun import SaveRun
@@ -89,6 +91,11 @@ def sol_permute():
     str = str + list(opt_solution)
     # sample a new permutation
     permutation = ''.join(random.sample(str, size_feature))
+
+    # game = Game()
+    while (fitness.game.play(1, permutation) == -1):
+        permutation = ''.join(random.sample(str, size_feature))
+
     return permutation
 
 
