@@ -139,7 +139,11 @@ class DistanceAndBox(Fitness):
         return self.fitness
 
     def evaluate(self, child):
+
         self.game.play(level=1, list_move=child)
+
+
+        boxes_deadlock = self.game.crate_deadlock(1)
 
         area_f = self.area_fitness()
         euclidean_distance = self.measure.euclidean_distance()

@@ -3,6 +3,7 @@ import itertools
 import pathlib
 from configparser import ConfigParser
 from datetime import date, datetime
+import random
 
 
 class SaveRun:
@@ -40,19 +41,22 @@ class SaveRun:
             write permutations to file
             because It takes a long time to produce a permutation - run i  server
         """
-        def string_split():
-            # string = "ullluuuLUllDlldddrRRRRRRRRRRRRurDllllllllllllllulldRRRRRRRRRRRRRdrUluRRlldlllllluuululldDDuulldddrRR RRRRRRRRRRlllllllluuulLulDDDuulldddrRRRRRRRRRRRurDlllllllluuululuurDDllddddrrruuuLLulDDDuulldddrRRRRRRRRRRdrUluRldlllllluuuluuullDDDDDuulldddrRRRRRRRRRRR"
-            string = "ulldddrRR"
+        def string_split(string):
             list_move = []
             for i in string:
                 if i == " ":
                     continue
                 list_move.append(i)
             return list_move
-
-        list_solution = string_split()
-        # todo change permutations
-        data_set_permutation = list(itertools.permutations(list_solution))
+        opt_solution = "ullluuuLUllDlldddrRRRRRRRRRRRRurDllllllllllllllulldRRRRRRRRRRRRRdrUluRRlldlllllluuululldDDuulldddrRR RRRRRRRRRRlllllllluuulLulDDDuulldddrRRRRRRRRRRRurDlllllllluuululuurDDllddddrrruuuLLulDDDuulldddrRRRRRRRRRRdrUluRldlllllluuuluuullDDDDDuulldddrRRRRRRRRRRR"
+        size_feature = 500
+        size_population_init = 1000
+        data_set_permutation = []
+        for i in range(size_population_init):
+            permutation = random.sample(opt_solution, abs(size_feature - len(opt_solution)))
+            permutation = permutation + list(opt_solution)
+            permutation = ''.join(random.sample(permutation, size_feature))
+            data_set_permutation.append(string_split(permutation))
         with open(str(pathlib.Path().absolute()) + "/File/permutations.csv", 'w') as file:
             wr = csv.writer(file, quoting=csv.QUOTE_ALL)
             for i in data_set_permutation:
@@ -79,5 +83,5 @@ class SaveRun:
 if __name__ == '__main__':
     run = SaveRun()
     run.write_permutations()
-    # # run.read_permutations()
+    # run.read_permutations()
     # run.write_config()

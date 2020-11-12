@@ -1,14 +1,17 @@
-# region import
-
 from deap import base, creator
 import random
 from deap import tools
 from configparser import ConfigParser
 from fitness import SimpleDistanceFitness, AbsDifferenceSolutionLengthFitness, AreaLengthFitness, Fitness,DistanceAndBox
+import itertools
+from itertools import permutations
+from tqdm import tqdm
+
+from Game import Game
+from fitness import SimpleDistanceFitness, AbsDifferenceSolutionLengthFitness, AreaLengthFitness, Fitness, \
+    DistanceAndCrates
 from SaveRun import SaveRun
 from fitness import SimpleDistanceFitness, AbsDifferenceSolutionLengthFitness, AreaLengthFitness
-
-# endregion
 
 # region write run parameter
 write_run = SaveRun()
@@ -23,7 +26,7 @@ fitness_dict = {"AreaLengthFitness": AreaLengthFitness,
                 "DistanceAndBox": DistanceAndBox}
 
 crossover_dict = {"cxTwoPoint": tools.cxTwoPoint,
-                  "cxUniform":tools.cxUniform}
+                  "cxUniform": tools.cxUniform}
 
 mutate_dict = {"mutShuffleIndexes": tools.mutShuffleIndexes}
 crossover_dict = {"cxTwoPoint": tools.cxTwoPoint}
@@ -54,58 +57,56 @@ mutate = mutate_dict[operators["mutate"]]
 ######## I didnt cange the select in the code itself. it has another different param for each method
 # endregion
 
-
 possible_Moves = ['U', 'R', 'L', 'D', 'u', 'r', 'l', 'd']
 random.seed(seed_number)
 
 creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
 creator.create("Individual", list, fitness=creator.FitnessMin)
 
+
 def mutate_rand(individual, indpb):
     size = len(individual)
     for i in range(size):
         if random.random() < indpb:
-            individual[i] = random_pop()
+            individual[i] = define_init_pop_random()
     return individual,
 
-def random_pop():
+
+def define_init_pop_random():
     move_index = random.randint(0, 7)
     return possible_Moves[move_index]
 
-def define_init_pop():
+
+def define_init_pop_from_solution():
     data_set_permutation = SaveRun.read_permutations()
-    random_permutation = random.sample(data_set_permutation, size_population_init)
-    return random_permutation
+    return random.sample(data_set_permutation, 1)[0]
 
 
 toolbox = base.Toolbox()
 
 if permutations:
-    toolbox.register("random_sampling", random.sample, define_init_pop(), 1)
-    toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.random_sampling, n=size_feature)
+    toolbox.register("random_sampling", define_init_pop_from_solution)
+    toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.random_sampling)
 
 else:
-    toolbox.register("attr_str", random_pop)
+    toolbox.register("attr_str", define_init_pop_random)
     toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.attr_str, n=size_feature)
 
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
-# define operator
-toolbox.register("mate", tools.cxMessyOnePoint)
-toolbox.register("mutate", mutate, indpb=0.4)
-
-toolbox.register("select", tools.selTournament, tournsize=5)
 # region define operator
 toolbox.register("mate", crossover)
-toolbox.register("mutate", mutate, indpb=mutation_prob)
+toolbox.register("mutate", mutate_rand, indpb=mutation_prob)
 toolbox.register("select", tools.selTournament, tournsize=2)
 toolbox.register("evaluate", fitness.evaluate)
+
+
 # endregion
 
 
 def main():
     pop = toolbox.population(n=size_population_init)
-    #print(pop)
+    # print(pop)
     # Evaluate the entire population
     fitnesses = map(toolbox.evaluate, pop)
     min_fitness = -1
@@ -115,9 +116,10 @@ def main():
         sum += fit[0]
         if fit[0] < min_fitness:
             min_fitness = fit[0]
+            print(min_fitness)
     write_run.write_epoch(-1, min_fitness, sum, size_population_init)
 
-    for epoch in range(number_run):
+    for epoch in tqdm(range(number_run)):
         # Select the next generation individuals
         offspring = toolbox.select(pop, len(pop))
         # Clone the selected individuals
