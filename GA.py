@@ -99,7 +99,7 @@ def sol_permute():
 toolbox = base.Toolbox()
 
 if permutations:
-    toolbox.register("random_sampling", random.sample, sol_permute(), 1)
+    toolbox.register("random_sampling",random.sample, sol_permute(), 1)
     toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.random_sampling, n=size_feature)
 
 else:
