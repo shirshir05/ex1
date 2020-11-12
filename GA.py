@@ -80,14 +80,14 @@ def define_init_pop_random():
 
 def define_init_pop_from_solution():
     data_set_permutation = SaveRun.read_permutations()
-    return ', '.join(random.sample(data_set_permutation, 1)[0])
+    return random.sample(data_set_permutation, 1)[0]
 
 
 toolbox = base.Toolbox()
 
 if permutations:
     toolbox.register("random_sampling", define_init_pop_from_solution)
-    toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.random_sampling, n=1)
+    toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.random_sampling)
 
 else:
     toolbox.register("attr_str", define_init_pop_random)
