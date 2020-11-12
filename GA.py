@@ -91,11 +91,6 @@ def sol_permute():
     str = str + list(opt_solution)
     # sample a new permutation
     permutation = ''.join(random.sample(str, size_feature))
-
-    # game = Game()
-    while (fitness.game.play(1, permutation) == -1):
-        permutation = ''.join(random.sample(str, size_feature))
-
     return permutation
 
 
