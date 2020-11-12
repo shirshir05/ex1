@@ -59,7 +59,6 @@ mutate = mutate_dict[operators["mutate"]]
 # endregion
 
 possible_Moves = ['U', 'R', 'L', 'D', 'u', 'r', 'l', 'd']
-
 random.seed(seed_number)
 
 creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
@@ -81,15 +80,14 @@ def define_init_pop_random():
 
 def define_init_pop_from_solution():
     data_set_permutation = SaveRun.read_permutations()
-
-    return data_set_permutation
+    return ', '.join(random.sample(data_set_permutation, 1)[0])
 
 
 toolbox = base.Toolbox()
 
 if permutations:
-    toolbox.register("random_sampling", random.sample, define_init_pop_from_solution, 1)
-    toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.random_sampling, n=size_feature)
+    toolbox.register("random_sampling", define_init_pop_from_solution)
+    toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.random_sampling, n=1)
 
 else:
     toolbox.register("attr_str", define_init_pop_random)
