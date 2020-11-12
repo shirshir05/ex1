@@ -59,8 +59,6 @@ mutate = mutate_dict[operators["mutate"]]
 # endregion
 
 possible_Moves = ['U', 'R', 'L', 'D', 'u', 'r', 'l', 'd']
-opt_solution = "ullluuuLUllDlldddrRRRRRRRRRRRRurDllllllllllllllulldRRRRRRRRRRRRRdrUluRRlldlllllluuululldDDuulldddrRR RRRRRRRRRRlllllllluuulLulDDDuulldddrRRRRRRRRRRRurDlllllllluuululuurDDllddddrrruuuLLulDDDuulldddrRRRRRRRRRRdrUluRldlllllluuuluuullDDDDDuulldddrRRRRRRRRRRR"
-
 random.seed(seed_number)
 
 creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
@@ -71,39 +69,28 @@ def mutate_rand(individual, indpb):
     size = len(individual)
     for i in range(size):
         if random.random() < indpb:
-            individual[i] = random_pop()
+            individual[i] = define_init_pop_random()
     return individual,
 
 
-def random_pop():
+def define_init_pop_random():
     move_index = random.randint(0, 7)
     return possible_Moves[move_index]
 
 
-def define_init_pop():
+def define_init_pop_from_solution():
     data_set_permutation = SaveRun.read_permutations()
-    random_permutation = random.sample(data_set_permutation, size_population_init)
-    return random_permutation
-
-
-def sol_permute():
-    # sample a string at size size_feature - len(opt_solution)
-    str = random.sample(opt_solution, abs(size_feature - len(opt_solution)))
-    # join it to the original optimal solution = now the string's length = size_feature
-    str = str + list(opt_solution)
-    # sample a new permutation
-    permutation = ''.join(random.sample(str, size_feature))
-    return permutation
+    return random.sample(data_set_permutation, 1)[0]
 
 
 toolbox = base.Toolbox()
 
 if permutations:
-    toolbox.register("random_sampling",random.sample, sol_permute(), 1)
-    toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.random_sampling, n=size_feature)
+    toolbox.register("random_sampling", define_init_pop_from_solution)
+    toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.random_sampling)
 
 else:
-    toolbox.register("attr_str", random_pop)
+    toolbox.register("attr_str", define_init_pop_random)
     toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.attr_str, n=size_feature)
 
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
