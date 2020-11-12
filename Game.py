@@ -222,17 +222,13 @@ class Game:
             if self.is_completed(level):
                 return True
             if move == 'L' or move == 'l':
-                if not self.move(level, 0, -1, True):
-                    return -1
+                self.move(level, 0, -1, True)
             elif move == 'R' or move == 'r':
-                if not self.move(level, 0, 1, True):
-                    return -1
+               self.move(level, 0, 1, True)
             elif move == 'U' or move == 'u':
-                if not self.move(level, -1, 0, True):
-                    return -1
+                self.move(level, -1, 0, True)
             elif move == 'D' or move =='d':
-                if not self.move(level, 1, 0, True):
-                    return -1
+                self.move(level, 1, 0, True)
             index += 1
         return self.is_completed(level)  # True/ False
 
