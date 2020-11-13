@@ -71,7 +71,7 @@ class MeasureForFitness:
                     counter = counter + 1
         return int(self.Measure["left_box"]) * counter
 
-    def euclidean_distance(self, from_box):
+    def euclidean_distance(self, from_box, sum):
         """
             :Return
                 The minimum distance for box from the dock * self.Measure["euclidean_distance"]
@@ -95,8 +95,16 @@ class MeasureForFitness:
                                 d = np.sqrt(((row_pos - target_row_pos) ** 2) + ((col_pos - target_col_pos) ** 2))
                                 distances.append(d)
                     min_d = np.min(distances)
-                    min_distances.append(min_d)
-        return int(self.Measure["euclidean_distance"]) * np.sum(min_distances)
+                    if min_d != 0:
+                        min_distances.append(min_d)
+        if sum ==True:
+            score = np.sum(min_distances)
+        else:
+            score = np.min(min_distances)
+
+        return int(self.Measure["euclidean_distance"]) * score
+
+
 
     def absolute_distance(self, x_val, range_min, range_max, max):
         """
@@ -138,3 +146,4 @@ class MeasureForFitness:
                 ind_col = ind_col + 1
             ind_row = ind_row + 1
         return int(self.Measure["box_deadlock"]) * counter
+

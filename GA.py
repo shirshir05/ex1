@@ -91,8 +91,8 @@ toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
 # region define operator
 toolbox.register("mate", crossover)
-toolbox.register("mutate", mutate, indpb=mutation_prob)
-toolbox.register("select", tools.selTournament, tournsize=2)
+toolbox.register("mutate", mutate_rand, indpb=mutation_prob)
+toolbox.register("select", tools.selTournament, tournsize=5)
 toolbox.register("evaluate", fitness.evaluate)
 
 
@@ -104,7 +104,7 @@ def main():
     # print(pop)
     # Evaluate the entire population
     fitnesses = map(toolbox.evaluate, pop)
-    min_fitness = -1
+    min_fitness = float("inf")
     sum = 0
     for ind, fit in zip(pop, fitnesses):
         ind.fitness.values = fit
@@ -120,7 +120,7 @@ def main():
         # Clone the selected individuals
         offspring = list(map(toolbox.clone, offspring))
 
-        min_fitness = 0
+        min_fitness = float("inf")
         sum_fitness = 0
 
         # Apply crossover and mutation on the offspring
@@ -148,7 +148,7 @@ def main():
         for ind, fit in zip(invalid_ind, fitnesses):
             ind.fitness.values = fit
             sum_fitness += ind.fitness.values[0]
-            if min_fitness < ind.fitness.values[0]:
+            if min_fitness > ind.fitness.values[0]:
                 min_fitness = ind.fitness.values[0]
 
         write_run.write_epoch(epoch, min_fitness, sum_fitness, size_population_init)

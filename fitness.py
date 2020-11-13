@@ -143,12 +143,18 @@ class DistanceAndBox(Fitness):
         return ans
 
     def evaluate(self, child):
+        self.game = Game("one_input.txt", 1)
+
+
         self.measure.init(self.game, child)
         self.game.play(level=1, list_move=child)
 
         boxes_deadlock = self.measure.box_deadlock(1)
 
         area_f = self.area_fitness()
-        euclidean_distance = self.measure.euclidean_distance('.')
+        euclidean_distance = self.measure.euclidean_distance('.',False)
 
-        return area_f + euclidean_distance + boxes_deadlock,
+        list_box, list_free, list_dock, worker = self.measure.position(1)
+       # worker_distance = self.measure.euclidean_distance('@')
+
+        return area_f  +euclidean_distance+ boxes_deadlock,
