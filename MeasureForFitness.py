@@ -11,10 +11,10 @@ class MeasureForFitness:
         self.game = None
         self.Measure = None
 
-    def init(self, game, individual):
+    def init(self, game, individual, name):
         self.individual = individual
         self.game = game
-        self.config_object.read("config.ini")
+        self.config_object.read(name)
         self.Measure = self.config_object["Measure"]
 
     def position(self, level):
