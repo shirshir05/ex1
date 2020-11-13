@@ -75,7 +75,7 @@ class MeasureForFitness:
                     counter = counter + 1
         return int(self.Measure["left_box"]) * counter
 
-    def euclidean_distance(self, from_box):
+    def euclidean_distance(self, from_box, sum):
         """
             :Return
                 The minimum distance for box from the dock * self.Measure["euclidean_distance"]
@@ -96,12 +96,17 @@ class MeasureForFitness:
                         for cell_target in row_target:
                             target_col_pos = target_col_pos + 1
                             if cell_target == from_box:
-                                d = np.sqrt (((row_pos - target_row_pos) ** 2) + ((col_pos - target_col_pos) ** 2))
+                                d = np.sqrt(((row_pos - target_row_pos) ** 2) + ((col_pos - target_col_pos) ** 2))
                                 distances.append(d)
                     min_d = np.min(distances)
                     if min_d != 0:
                         min_distances.append(min_d)
-        return int(self.Measure["euclidean_distance"]) * np.min(min_distances)
+        if sum == True:
+            score = np.sum(min_distances)
+        else:
+            score = np.min(min_distances)
+
+        return int(self.Measure["euclidean_distance"]) * score
 
     def absolute_distance(self, x_val, range_min, range_max, max):
         """
@@ -126,7 +131,8 @@ class MeasureForFitness:
             for cell in row:
                 if cell == '$':
                     # right top corner
-                    if row[ind_col + 1] in ['#', '*', '$'] and self.game.matrix[level - 1][ind_row - 1][ind_col] in ['#', '*', '$']:
+                    if row[ind_col + 1] in ['#', '*', '$'] and self.game.matrix[level - 1][ind_row - 1][ind_col] in [
+                        '#', '*', '$']:
                         counter = counter + 1
                     # left top corner
                     if (row[ind_col - 1] in ['#', '*', '$'] and self.game.matrix[level - 1][ind_row - 1][ind_col] in [
@@ -143,3 +149,11 @@ class MeasureForFitness:
                 ind_col = ind_col + 1
             ind_row = ind_row + 1
         return int(self.Measure["box_deadlock"]) * counter
+
+    def box_on_the_way(self):
+        counter = 0
+        list_box, list_free, list_dock, worker = self.position(1)
+        for box in list_box:
+            if box[0] > 5 and box[1] > 8:
+                counter += 1
+        return int(self.Measure["box_on_the_way"]) * counter

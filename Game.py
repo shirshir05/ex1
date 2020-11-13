@@ -206,6 +206,7 @@ class Game:
         return True
 
     def play(self, level, list_move):
+        #print("start")
         index = 0
         for move in list_move:
             if self.is_completed(level):
@@ -213,17 +214,18 @@ class Game:
             if move == 'L' or move == 'l':
                 self.move(level, 0, -1, True)
             elif move == 'R' or move == 'r':
-               self.move(level, 0, 1, True)
+                self.move(level, 0, 1, True)
             elif move == 'U' or move == 'u':
                 self.move(level, -1, 0, True)
-            elif move == 'D' or move =='d':
+            elif move == 'D' or move == 'd':
                 self.move(level, 1, 0, True)
             index += 1
+        self.print_board()
         return self.is_completed(level)  # True/ False
 
     @staticmethod
     def string_split():
-        string = "ullluuuLUllDlldddrRRRRRRRRRRRRurDllllllllllllllulldRRRRRRRRRRRRRdrUluRRlldlllllluuululldDDuulldddrRR RRRRRRRRRRlllllllluuulLulDDDuulldddrRRRRRRRRRRRurDlllllllluuululuurDDllddddrrruuuLLulDDDuulldddrRRRRRRRRRRdrUluRldlllllluuuluuullDDDDDuulldddrRRRRRRRRRRR"
+        string = "ullluuuLUllDlldddrRRRRRRRRRRRRurDllllllllllllllulldRRRRRRRRRRRRRdrUluRRlldlllllluuululldDDuulldddrRRRRRRRRRRRRlllllllluuulLulDDDuulldddrRRRRRRRRRRRurDlllllllluuululuurDDllddddrrruuuLLulDDDuulldddrRRRRRRRRRRdrUluRldlllllluuuluuullDDDDDuulldddrRRRRRRRRRRR"
         list_move = []
         for i in string:
             if i == " ":

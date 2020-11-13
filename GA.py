@@ -90,7 +90,7 @@ class GA:
         # region define operator
         self.toolbox.register("mate", self.crossover)
         self.toolbox.register("mutate", self.mutate_rand, indpb=self.mutation_prob)
-        self.toolbox.register("select", tools.selTournament, tournsize=2)
+        self.toolbox.register("select", tools.selTournament, tournsize=5)
         self.toolbox.register("evaluate", self.fitness.evaluate)
 
     def mutate_rand(self, individual, indpb):
@@ -137,8 +137,8 @@ class GA:
                     del mutant.fitness.values
 
             # Evaluate the individuals with an invalid fitness
-            # invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
-            invalid_ind = [ind for ind in offspring]
+            invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
+            # invalid_ind = [ind for ind in offspring]
             fitnesses = map(self.toolbox.evaluate, invalid_ind)
             for ind, fit in zip(invalid_ind, fitnesses):
                 ind.fitness.values = fit

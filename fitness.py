@@ -78,6 +78,7 @@ class AreaLengthFitness(Fitness):
         self.measure.init(self.game, child, self.name_file)
         self.game.play(level=1, list_move=child)
 
+
         # This part rewards short sequences
         ans = self.measure.gen_length(self.gen_length)
 
@@ -161,6 +162,11 @@ class DistanceAndBox(Fitness):
         boxes_deadlock = self.measure.box_deadlock(1)
 
         area_f = self.area_fitness()
-        euclidean_distance = self.measure.euclidean_distance('.')
+        euclidean_distance = self.measure.euclidean_distance('.',False)
 
-        return area_f + euclidean_distance + boxes_deadlock,
+        list_box, list_free, list_dock, worker = self.measure.position(1)
+       # worker_distance = self.measure.euclidean_distance('@')
+        box_on_the_way= self.measure.box_on_the_way()
+        if(box_on_the_way!=0):
+            print(box_on_the_way)
+        return area_f  +euclidean_distance+ boxes_deadlock+box_on_the_way,
