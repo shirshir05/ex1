@@ -15,9 +15,9 @@ class SaveRun:
         self.path = str(pathlib.Path().absolute()) + "/Experiments/" + str(dt_string) + ".csv"
         self.file = open(self.path, "w")
 
-    def write_config(self):
+    def write_config(self, name):
         config_object = ConfigParser()
-        config_object.read("config.ini")
+        config_object.read(name)
         dict_config = [{section: dict(config_object[section]) for section in config_object.sections()}]
         with open(self.path, 'w', newline='') as myfile:
             writer_list = csv.writer(myfile, delimiter=',')
