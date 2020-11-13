@@ -156,5 +156,7 @@ class DistanceAndBox(Fitness):
 
         list_box, list_free, list_dock, worker = self.measure.position(1)
        # worker_distance = self.measure.euclidean_distance('@')
-
-        return area_f  +euclidean_distance+ boxes_deadlock,
+        box_on_the_way= self.measure.box_on_the_way()
+        if(box_on_the_way!=0):
+            print(box_on_the_way)
+        return area_f  +euclidean_distance+ boxes_deadlock+box_on_the_way,
