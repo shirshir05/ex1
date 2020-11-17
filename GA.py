@@ -89,8 +89,8 @@ class GA:
 
         # region define operator
         self.toolbox.register("mate", self.crossover)
-        self.toolbox.register("mutate", self.mutate_rand, indpb=self.mutation_prob)
-        self.toolbox.register("select", tools.selTournament, tournsize=5)
+        self.toolbox.register("mutate", self.mutate, indpb=self.mutation_prob)
+        self.toolbox.register("select", tools.selTournament,tournsize=5)
         self.toolbox.register("evaluate", self.fitness.evaluate)
 
     def mutate_rand(self, individual, indpb):
@@ -142,9 +142,9 @@ class GA:
             fitnesses = map(self.toolbox.evaluate, invalid_ind)
             for ind, fit in zip(invalid_ind, fitnesses):
                 ind.fitness.values = fit
-                sum_fitness += ind.fitness.values[0]
 
             for ind in offspring:
+                sum_fitness +=ind.fitness.values[0]
                 if min_fitness > ind.fitness.values[0]:
                     min_fitness = ind.fitness.values[0]
 
@@ -156,110 +156,6 @@ class GA:
         return pop
 
 
-try:
-    ga = GA("1A.ini")
-    ga.main()
-except Exception as e:
-    pass
+ga = GA("config.ini")
+ga.main()
 
-try:
-
-    ga = GA("1B.ini")
-    ga.main()
-except Exception as e:
-    pass
-
-try:
-    ga = GA("1C.ini")
-    ga.main()
-except Exception as e:
-    pass
-
-try:
-    ga = GA("1D.ini")
-    ga.main()
-except Exception as e:
-    pass
-
-try:
-    ga = GA("1E.ini")
-    ga.main()
-except Exception as e:
-    pass
-
-try:
-    ga = GA("1F.ini")
-    ga.main()
-except Exception as e:
-    pass
-
-try:
-    ga = GA("2A.ini")
-    ga.main()
-except Exception as e:
-    pass
-
-try:
-    ga = GA("2B.ini")
-    ga.main()
-except Exception as e:
-    pass
-
-try:
-    ga = GA("2C.ini")
-    ga.main()
-except Exception as e:
-    pass
-
-try:
-    ga = GA("2D.ini")
-    ga.main()
-except Exception as e:
-    pass
-
-try:
-    ga = GA("2E.ini")
-    ga.main()
-except Exception as e:
-    pass
-
-try:
-    ga = GA("2F.ini")
-    ga.main()
-except Exception as e:
-    pass
-
-try:
-    ga = GA("3A.ini")
-    ga.main()
-except Exception as e:
-    pass
-
-try:
-    ga = GA("3B.ini")
-    ga.main()
-except Exception as e:
-    pass
-try:
-    ga = GA("3C.ini")
-    ga.main()
-except Exception as e:
-    pass
-
-try:
-    ga = GA("3D.ini")
-    ga.main()
-except Exception as e:
-    pass
-
-try:
-    ga = GA("3E.ini")
-    ga.main()
-except Exception as e:
-    pass
-
-try:
-    ga = GA("3F.ini")
-    ga.main()
-except Exception as e:
-    pass

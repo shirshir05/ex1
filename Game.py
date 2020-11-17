@@ -207,6 +207,8 @@ class Game:
 
     def play(self, level, list_move):
         #print("start")
+        #self.print_board()
+
         index = 0
         for move in list_move:
             if self.is_completed(level):
@@ -220,7 +222,6 @@ class Game:
             elif move == 'D' or move == 'd':
                 self.move(level, 1, 0, True)
             index += 1
-        self.print_board()
         return self.is_completed(level)  # True/ False
 
     @staticmethod
