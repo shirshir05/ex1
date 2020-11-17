@@ -154,6 +154,30 @@ class MeasureForFitness:
         counter = 0
         list_box, list_free, list_dock, worker = self.position(1)
         for box in list_box:
+            # if box[0] < 2:
+            #     counter -= 0.5
+            # if box[0] > 6 and box[0] < 8 and box[1] > 4:
+            #     counter += 0.5
             if box[0] > 5 and box[1] > 8:
                 counter += 1
+            # if box[0] > 6 and box[1] > 14:
+            #     counter += 1.5
+            # if box[0] == 4 and box[1] >6:
+            #     counter -= 0.5
+            # if box[0] > 6 and box[1] < 4:
+            #     counter -= 0.5
+
+        return int(self.Measure["box_on_the_way"]) * counter
+
+    def boxes_left_side(self):
+        counter = 0
+        list_box, list_free, list_dock, worker = self.position(1)
+        for box in list_box:
+
+            if box[0] > 6 and box[1] > 4 and box[1] < 8:
+                counter += 0.5
+            if box[0] > 6 and box[1] < 4:
+                counter -= 0.5
+                if box[0] == 4 and box[1] == 8:
+                    counter -= 1
         return int(self.Measure["box_on_the_way"]) * counter
