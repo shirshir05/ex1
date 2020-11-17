@@ -86,7 +86,7 @@ class AreaLengthFitness(Fitness):
             return 0,
         worker_in_deadlock = self.measure.worker_in_deadlock(level=1)
         count_left_box = self.measure.count_left_box(level=1)
-        euclidean_distance = self.measure.euclidean_distance('.')
+        euclidean_distance = self.measure.euclidean_distance('.', False)
 
         # self.game.write_board(self.int_write, self.epoch, worker_in_deadlock, count_left_box, euclidean_distance )
         # self.int_write += 1
@@ -107,7 +107,7 @@ class SimpleDistanceFitness(Fitness):
         self.game = Game("one_input.txt", 1)
         self.measure.init(self.game, child, self.name_file)
         self.game.play(level=1, list_move=child)
-        return self.measure.euclidean_distance('.'),
+        return self.measure.euclidean_distance('.', False),
 
 
 # =======================================================================================#
@@ -162,11 +162,8 @@ class DistanceAndBox(Fitness):
         boxes_deadlock = self.measure.box_deadlock(1)
 
         area_f = self.area_fitness()
-        euclidean_distance = self.measure.euclidean_distance('.',False)
+        euclidean_distance = self.measure.euclidean_distance('.', False)
 
-        list_box, list_free, list_dock, worker = self.measure.position(1)
-       # worker_distance = self.measure.euclidean_distance('@')
-        box_on_the_way= self.measure.box_on_the_way()
-        if(box_on_the_way!=0):
-            print(box_on_the_way)
-        return area_f  +euclidean_distance+ boxes_deadlock+box_on_the_way,
+        box_on_the_way = self.measure.box_on_the_way()
+
+        return area_f + euclidean_distance + boxes_deadlock + box_on_the_way,
