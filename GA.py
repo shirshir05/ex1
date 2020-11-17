@@ -2,6 +2,9 @@ from deap import base, creator
 import random
 from deap import tools
 from configparser import ConfigParser
+
+from Game import Game
+from MeasureForFitness import MeasureForFitness
 from fitness import SimpleDistanceFitness, AbsDifferenceSolutionLengthFitness, AreaLengthFitness, DistanceAndBox
 from tqdm import tqdm
 from SaveRun import SaveRun
@@ -48,6 +51,7 @@ class GA:
 
 
         self.config_object = ConfigParser()
+        self.file_name = file_name
         self.config_object.read(file_name)
         # params
         self.params = self.config_object["PARAMS"]
@@ -89,8 +93,9 @@ class GA:
 
         # region define operator
         self.toolbox.register("mate", self.crossover)
+        # self.toolbox.register("mutate", self.mutate_rand, indpb=self.mutation_prob)
         self.toolbox.register("mutate", self.mutate, indpb=self.mutation_prob)
-        self.toolbox.register("select", tools.selTournament,tournsize=5)
+        self.toolbox.register("select", tools.selTournament, tournsize=5)
         self.toolbox.register("evaluate", self.fitness.evaluate)
 
     def mutate_rand(self, individual, indpb):
@@ -100,6 +105,19 @@ class GA:
                 individual[i] = self.define_init_pop_random()
         return individual,
 
+    def evaluate_inv(self, inv):
+        measure = MeasureForFitness()
+        game = Game("one_input.txt", 1)
+        measure.init(game, inv, self.file_name)
+        game.play(level=1, list_move=inv)
+
+        with open(str("inv") + '.txt', 'a') as filehandle:
+            filehandle.write(' %d,' % measure.box_deadlock(1))
+            filehandle.write(' %d,' % measure.euclidean_distance('.', False))
+            filehandle.write(' %d,' % measure.box_on_the_way())
+            filehandle.write(' %s,' % game.is_completed(level=1))
+            filehandle.write('%d,' % measure.worker_in_deadlock(level=1))
+            filehandle.write('%d \n' % measure.count_left_box(level=1))
 
     def main(self):
         pop = self.toolbox.population(n=self.size_population_init)
@@ -143,10 +161,12 @@ class GA:
             for ind, fit in zip(invalid_ind, fitnesses):
                 ind.fitness.values = fit
 
+            min_inv = None
             for ind in offspring:
-                sum_fitness +=ind.fitness.values[0]
+                sum_fitness += ind.fitness.values[0]
                 if min_fitness > ind.fitness.values[0]:
                     min_fitness = ind.fitness.values[0]
+                    min_inv = ind
 
             self.write_run.write_epoch(epoch, min_fitness, sum_fitness, self.size_population_init)
 
@@ -155,7 +175,115 @@ class GA:
         # print(pop)
         return pop
 
+try:
+    ga = GA("1A.ini")
+    ga.main()
+except Exception as e:
+    print(e)
+    pass
 
-ga = GA("config.ini")
-ga.main()
+# try:
+#
+#     ga = GA("1B.ini")
+#     ga.main()
+# except Exception as e:
+#     print(e)
+#     pass
+#
+# try:
+#     ga = GA("1C.ini")
+#     ga.main()
+# except Exception as e:
+#     print(e)
+#     pass
 
+# try:
+#     ga1 = GA("1D.ini")
+#     ga1.main()
+# except Exception as e:
+#     print(e)
+#     pass
+#
+# try:
+#     ga2 = GA("1E.ini")
+#     ga2.main()
+# except Exception as e:
+#     print(e)
+#     pass
+
+# try:
+#     ga3 = GA("1F.ini")
+#     ga3.main()
+# except Exception as e:
+#     pass
+
+# try:
+#     ga = GA("2A.ini")
+#     ga.main()
+# except Exception as e:
+#     pass
+#
+# try:
+#     ga = GA("2B.ini")
+#     ga.main()
+# except Exception as e:
+#     pass
+#
+# try:
+#     ga = GA("2C.ini")
+#     ga.main()
+# except Exception as e:
+#     pass
+#
+# try:
+#     ga = GA("2D.ini")
+#     ga.main()
+# except Exception as e:
+#     pass
+#
+# try:
+#     ga = GA("2E.ini")
+#     ga.main()
+# except Exception as e:
+#     pass
+#
+# try:
+#     ga = GA("2F.ini")
+#     ga.main()
+# except Exception as e:
+#     pass
+#
+# try:
+#     ga = GA("3A.ini")
+#     ga.main()
+# except Exception as e:
+#     pass
+#
+# try:
+#     ga = GA("3B.ini")
+#     ga.main()
+# except Exception as e:
+#     pass
+# try:
+#     ga = GA("3C.ini")
+#     ga.main()
+# except Exception as e:
+#     pass
+#
+# try:
+#     ga = GA("3D.ini")
+#     ga.main()
+# except Exception as e:
+#     pass
+#
+# try:
+#     ga = GA("3E.ini")
+#     ga.main()
+# except Exception as e:
+#     pass
+#
+# try:
+#     ga = GA("3F.ini")
+#     ga.main()
+# except Exception as e:
+#     pass
