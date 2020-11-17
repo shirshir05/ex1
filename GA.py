@@ -1,14 +1,16 @@
+from datetime import datetime
+
 from deap import base, creator
 import random
 from deap import tools
 from configparser import ConfigParser
-
+import numpy as np
 from Game import Game
 from MeasureForFitness import MeasureForFitness
 from fitness import SimpleDistanceFitness, AbsDifferenceSolutionLengthFitness, AreaLengthFitness, DistanceAndBox
 from tqdm import tqdm
 from SaveRun import SaveRun
-
+import pickle
 
 class GA:
 
@@ -26,29 +28,28 @@ class GA:
     def __init__(self, file_name):
         self.write_run = SaveRun()
         self.fitness_dict = {"AreaLengthFitness": AreaLengthFitness,
-                        "AbsDifferenceSolutionLengthFitness": AbsDifferenceSolutionLengthFitness,
-                        "SimpleDistanceFitness": SimpleDistanceFitness,
-                        "DistanceAndBox": DistanceAndBox,
-                            }
+                             "AbsDifferenceSolutionLengthFitness": AbsDifferenceSolutionLengthFitness,
+                             "SimpleDistanceFitness": SimpleDistanceFitness,
+                             "DistanceAndBox": DistanceAndBox,
+                             }
 
         self.crossover_dict = {"cxTwoPoint": tools.cxTwoPoint,
-                          "cxUniform": tools.cxUniform,
-                               "cxOnePoint" : tools.cxOnePoint,
-                            "cxOrdered" : tools.cxOrdered,
+                               "cxUniform": tools.cxUniform,
+                               "cxOnePoint": tools.cxOnePoint,
+                               "cxOrdered": tools.cxOrdered,
                                "cxPartialyMatched": tools.cxPartialyMatched,
-                               "cxUniformPartialyMatched" : tools.cxUniformPartialyMatched,
-                               "cxBlend" : tools.cxBlend,
-                               "cxESBlend" : tools.cxESBlend,
-                               "cxESTwoPoint" : tools.cxESTwoPoint,
-                               "cxSimulatedBinary" : tools.cxSimulatedBinary,
-                               "cxSimulatedBinaryBounded" : tools.cxSimulatedBinaryBounded,
+                               "cxUniformPartialyMatched": tools.cxUniformPartialyMatched,
+                               "cxBlend": tools.cxBlend,
+                               "cxESBlend": tools.cxESBlend,
+                               "cxESTwoPoint": tools.cxESTwoPoint,
+                               "cxSimulatedBinary": tools.cxSimulatedBinary,
+                               "cxSimulatedBinaryBounded": tools.cxSimulatedBinaryBounded,
                                "cxMessyOnePoint": tools.cxMessyOnePoint}
         self.mutate_dict = {"mutShuffleIndexes": tools.mutShuffleIndexes,
                             "mutFlipBit": tools.mutFlipBit,
-                            "mutPolynomialBounded" : tools.mutPolynomialBounded,
-                            "mutUniformInt" : tools.mutUniformInt,
-                            "mutESLogNormal":tools.mutESLogNormal}
-
+                            "mutPolynomialBounded": tools.mutPolynomialBounded,
+                            "mutUniformInt": tools.mutUniformInt,
+                            "mutESLogNormal": tools.mutESLogNormal}
 
         self.config_object = ConfigParser()
         self.file_name = file_name
@@ -87,7 +88,8 @@ class GA:
 
         else:
             self.toolbox.register("attr_str", self.define_init_pop_random)
-            self.toolbox.register("individual", tools.initRepeat, creator.Individual, self.toolbox.attr_str, n=self.size_feature)
+            self.toolbox.register("individual", tools.initRepeat, creator.Individual, self.toolbox.attr_str,
+                                  n=self.size_feature)
 
         self.toolbox.register("population", tools.initRepeat, list, self.toolbox.individual)
 
@@ -120,7 +122,20 @@ class GA:
             filehandle.write('%d \n' % measure.count_left_box(level=1))
 
     def main(self):
+        min_inv = None
+        time = datetime.now()
+        gen_time = []
         pop = self.toolbox.population(n=self.size_population_init)
+        stats = tools.Statistics(lambda ind: ind.fitness.values)
+        stats.register("avg", np.mean)
+        stats.register("std", np.std)
+        stats.register("min", np.min)
+        stats.register("max", np.max)
+        stats.register("med",np.median)
+
+        logbook = tools.Logbook()
+        logbook.header = ["gen", "evals"] + stats.fields
+
         # print(pop)
         # Evaluate the entire population
         fitnesses = map(self.toolbox.evaluate, pop)
@@ -161,22 +176,35 @@ class GA:
             for ind, fit in zip(invalid_ind, fitnesses):
                 ind.fitness.values = fit
 
-            min_inv = None
+
             for ind in offspring:
                 sum_fitness += ind.fitness.values[0]
                 if min_fitness > ind.fitness.values[0]:
                     min_fitness = ind.fitness.values[0]
                     min_inv = ind
 
-            self.write_run.write_epoch(epoch, min_fitness, sum_fitness, self.size_population_init)
+            #self.write_run.write_epoch(epoch, min_fitness, sum_fitness, self.size_population_init)
 
             # The population is entirely replaced by the offspring
             pop[:] = offspring
+            # for part in pop:
+            #    self.toolbox.update(pop)  # min_ind = best
+
+            # Gather all the fitnesses in one list and print the stats
+            self.evaluate_inv(min_inv)
+            logbook.record(gen=epoch, evals=len(pop), **stats.compile(pop))
+            #print(logbook.stream)
+            gen_time.append(time.minute-datetime.now().minute)
+            time = datetime.now()
         # print(pop)
+        pickle.dump(logbook, open("logbook", 'wb'))
+        print("AVG generation runtime = {}".format(np.mean(gen_time)))
+        print(min_inv)
         return pop
 
+
 try:
-    ga = GA("1A.ini")
+    ga = GA("config.ini")
     ga.main()
 except Exception as e:
     print(e)
